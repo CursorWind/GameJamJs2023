@@ -84,7 +84,7 @@ camera.lookAt(0,0,0)
 stage.position.y = camera.position.y - 8
 controls = new OrbitControls(camera, renderer.domElement)
 
-timeSpeed = 0.1;
+timeSpeed = 0.2;
 
 function updateScreenInfo(){
   document.getElementById('screensinformation').style.display = 'block';
@@ -93,11 +93,11 @@ function updateScreenInfo(){
   document.getElementById("cubeCount").innerHTML = 'totals: '+String(scene.getObjectById(scene.id, true).children.length)+', cubes: '+String(cubeStorage.length);
 }
 
-const SelfShape = new THREE.IcosahedronGeometry(0.4);
+const SelfShape = new THREE.IcosahedronGeometry(0.4,0);
 var selfColor;
 if (SetColor){
   selfColor = SetColor
-} else {selfColor= 0xababff}
+} else {selfColor= 0xabbbff}
 const SelfMat = new THREE.MeshStandardMaterial({ color: selfColor});
 const playerMesh =  new THREE.Mesh(SelfShape,SelfMat);
 scene.add(playerMesh);
@@ -105,19 +105,52 @@ playerMesh.position.set(0,0,0);
 playerMesh.castShadow = true;
 playerMesh.receiveShadow = true;
 
+scene.fog = new THREE.Fog(0x000000, 1, 36);
+
+var movex=0; var movey=0;
 function ntick() {
     requestAnimationFrame(ntick);
-    camera.position.y += timeSpeed;
+    sLight.position.y += timeSpeed;
+    camera.position.y = sLight.position.y - 8;
     //camera.rotation.z += 0.001;
-    sLight.position.set(camera.position.x, camera.position.y+8, camera.position.z);
-    playerMesh.position.y = camera.position.y+9;
-    playerMesh.rotation.z = timeSpeed*Math.sin(tick/20)*6;
+    playerMesh.position.y = sLight.position.y+1.6;
+    playerMesh.rotation.x = timeSpeed*Math.sin(tick/20)*6;
+
+    //moving the player (the ones marked as comment will be tested soon o/)
+    if (keys.a.pressed){
+      if(playerMesh.position.x-0.4 >-1.6){
+        movex = -0.4;
+      }else movex = 0; //playerMesh.position.x=-1.6;
+    }
+    else if (keys.d.pressed){
+      if(playerMesh.position.x+0.4 < 1.6){
+        movex = 0.4;
+      }    else movex = 0; //playerMesh.position.x=1.6;
+    }
+    
+    if (keys.w.pressed) {
+      if (playerMesh.position.z + 0.4 < 1.6) {
+        movey = 0.4;
+      } else movey = 0; 
+      //playerMesh.position.z = 1.6;
+    } else if (keys.s.pressed) {
+      if (playerMesh.position.z - 0.4 > -1.6) {
+        movey = -0.4;
+      } else movey = 0;
+      //playerMesh.position.z = -1.6;
+    }
+    
+    
+ 
     tick++;
     for(var ax=0; ax < cubeStorage.length; ax++){
       cubeStorage[ax].update()
     }
     if(tick*timeSpeed%1==0){
-      sceneGen(camera.position.y+40)
+      
+      playerMesh.position.x += movex; playerMesh.position.z += movey; //its z axis for y in this case
+      movey = 0;movex=0;
+      sceneGen(sLight.position.y+40)
     }
     updateScreenInfo();
     //camera.position.x = Math.sin(Math.cos(tick/100))*400*Math.abs(Math.sin(tick/90)+1.2);
@@ -145,7 +178,7 @@ function onStart(){
 
 onStart()
 const sLight = new THREE.PointLight(0x556575,2, 640); //selflight = light on camera.
-sLight.position.set(camera.position.x, camera.position.y, camera.position.z);
+sLight.position.set(camera.position.x, camera.position.y+8, camera.position.z);
 sLight.lookAt(0, 0, 0);
 scene.add(sLight);
 
