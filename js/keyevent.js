@@ -1,4 +1,3 @@
-//todo: mouse shoot.
 //this is a very standard keyevent file, nothing much really.
 // if you are viewing this code as an outsider, some keys are redundant cause its copied from super circles project i made a while ago, its been like this since.
 
@@ -9,6 +8,7 @@ const keys = {
   w: { pressed: false },
   z: { pressed: false },
   x: { pressed: false },
+  c: { pressed: false },
   shi: {pressed: false},
   aLeft: { pressed: false },
   aRight: { pressed: false },
@@ -39,6 +39,9 @@ document.addEventListener("keydown", ({key}) => {
    case "x":
      keys.x.pressed = true;
      break;
+    case "c":
+      keys.c.pressed = true;
+      break;
    case "Shift":
      keys.shi.pressed = true;
      break;
@@ -81,6 +84,9 @@ document.addEventListener("keyup", ({ key }) => {
       break;
     case "x":
       keys.x.pressed = false;
+      break;
+      case "c":
+      keys.c.pressed = false;
       break;
     case "Shift":
       keys.shi.pressed = false;

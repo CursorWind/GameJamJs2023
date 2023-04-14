@@ -1,5 +1,5 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
-import { OrbitControls } from './OrbitControls.js'; var controls;
+//import { OrbitControls } from './OrbitControls.js'; var controls; all orbitcontrol tools are only used for debugging and production, therefore they are intentionally disabled now
 var tick = 0; var timeSpeed; //you can control this
 var SetColor;
 const scene = new THREE.Scene();
@@ -9,6 +9,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+
 const color2 = new THREE.Color( 'skyblue' );
 //scene.background = color2
 const renderer = new THREE.WebGLRenderer();
@@ -82,7 +83,7 @@ camera.position.z = 0;
 camera.position.y=-10;
 camera.lookAt(0,0,0)
 stage.position.y = camera.position.y - 8
-controls = new OrbitControls(camera, renderer.domElement)
+//controls = new OrbitControls(camera, renderer.domElement)
 
 timeSpeed = 0.2;
 
@@ -93,7 +94,7 @@ function updateScreenInfo(){
   document.getElementById("cubeCount").innerHTML = 'totals: '+String(scene.getObjectById(scene.id, true).children.length)+', cubes: '+String(cubeStorage.length);
 }
 
-const SelfShape = new THREE.IcosahedronGeometry(0.4,0);
+const SelfShape = new THREE.IcosahedronGeometry(0.3,0);
 var selfColor;
 if (SetColor){
   selfColor = SetColor
@@ -110,31 +111,34 @@ scene.fog = new THREE.Fog(0x000000, 1, 36);
 var movex=0; var movey=0;
 function ntick() {
     requestAnimationFrame(ntick);
-    sLight.position.y += timeSpeed;
-    camera.position.y = sLight.position.y - 8;
+    playerMesh.position.y += timeSpeed;
+
+    if(keys.c.pressed){camera.position.y = playerMesh.position.y - 8; camera.rotation.z+=0.01;sLight.position.y = playerMesh.position.y-1.2;}
+    else{camera.position.y = playerMesh.position.y+1; sLight.position.y = playerMesh.position.y+1;
+    camera.position.x = playerMesh.position.x, camera.position.z = playerMesh.position.z}
     //camera.rotation.z += 0.001;
-    playerMesh.position.y = sLight.position.y+1.6;
+    
     playerMesh.rotation.x = timeSpeed*Math.sin(tick/20)*6;
 
     //moving the player (the ones marked as comment will be tested soon o/)
     if (keys.a.pressed){
-      if(playerMesh.position.x-0.4 >-1.6){
+      if(playerMesh.position.x-0.4 >-2){
         movex = -0.4;
       }else movex = 0; //playerMesh.position.x=-1.6;
     }
     else if (keys.d.pressed){
-      if(playerMesh.position.x+0.4 < 1.6){
+      if(playerMesh.position.x+0.4 < 2){
         movex = 0.4;
       }    else movex = 0; //playerMesh.position.x=1.6;
     }
     
     if (keys.w.pressed) {
-      if (playerMesh.position.z + 0.4 < 1.6) {
+      if (playerMesh.position.z + 0.4 < 2) {
         movey = 0.4;
       } else movey = 0; 
       //playerMesh.position.z = 1.6;
     } else if (keys.s.pressed) {
-      if (playerMesh.position.z - 0.4 > -1.6) {
+      if (playerMesh.position.z - 0.4 > -2) {
         movey = -0.4;
       } else movey = 0;
       //playerMesh.position.z = -1.6;
@@ -147,10 +151,10 @@ function ntick() {
       cubeStorage[ax].update()
     }
     if(tick*timeSpeed%1==0){
+    playerMesh.position.x += movex; playerMesh.position.z += movey; //its z axis for y in this case
       
-      playerMesh.position.x += movex; playerMesh.position.z += movey; //its z axis for y in this case
       movey = 0;movex=0;
-      sceneGen(sLight.position.y+40)
+      sceneGen(playerMesh.position.y+40)
     }
     updateScreenInfo();
     //camera.position.x = Math.sin(Math.cos(tick/100))*400*Math.abs(Math.sin(tick/90)+1.2);
