@@ -1,7 +1,7 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
 //import { OrbitControls } from './OrbitControls.js'; var controls; all orbitcontrol tools are only used for debugging and production, therefore they are intentionally disabled now
 var tick = 0; var timeSpeed; //you can control this
-var SetColor;
+var SetColor; var pause;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   42,
@@ -9,6 +9,39 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+
+var audio = new Audio('/resources/the-noise-expirement (1).mp3'); audio.volume=0.1; audio.currentTime=0;
+
+audio.play();
+// Load the audio file
+var audioCtx = new AudioContext();
+var audioSrc = audioCtx.createMediaElementSource(audio);
+var analyser = audioCtx.createAnalyser();
+audioSrc.connect(analyser);
+analyser.connect(audioCtx.destination);
+
+// Set the FFT size
+analyser.fftSize = 2048;
+var bufferLength = analyser.frequencyBinCount;
+var dataArray = new Uint8Array(bufferLength);
+var threshold = 16;
+// Analyze the audio waveform
+function analyze() {
+  analyser.getByteFrequencyData(dataArray);
+  var sum = 0;
+  for (var i = 0; i < bufferLength; i++) {
+    sum += dataArray[i];
+  }
+  var average = sum / bufferLength;
+  if (average > threshold) {
+    console.log(78);
+    timeBounce(0.5);
+  }
+}
+
+// Start analyzing the audio waveform
+analyze();
+
 
 const color2 = new THREE.Color( 'skyblue' );
 //scene.background = color2
@@ -71,10 +104,8 @@ class cubes{
         this.boxItem.position.z = this.position.z;
         //this.boxItem.scale.y += 0.01;
 
-        if(this.position.y +6< camera.position.y){scene.remove(this.boxItem); cubeStorage.splice(cubeStorage.indexOf(this),1);this.boxItem.geometry.dispose();
-          this.boxItem.material.dispose();}
-    }
-}
+        //if(this.position.y +6< camera.position.y){scene.remove(this.boxItem); cubeStorage.splice(cubeStorage.indexOf(this),1);this.boxItem.geometry.dispose(); this.boxItem.material.dispose();}
+      }}
 
 const cubeStorage=[];
 
@@ -85,7 +116,7 @@ camera.lookAt(0,0,0)
 stage.position.y = camera.position.y - 8
 //controls = new OrbitControls(camera, renderer.domElement)
 
-timeSpeed = 0.2;
+timeSpeed = 0.05;
 
 function updateScreenInfo(){
   document.getElementById('screensinformation').style.display = 'block';
@@ -109,8 +140,18 @@ playerMesh.receiveShadow = true;
 scene.fog = new THREE.Fog(0x000000, 1, 36);
 
 var movex=0; var movey=0;
+
+//"functions are yellow" - a certain person
+
+function timeBounce(seconds){
+  playerMesh.position.y -= seconds;
+}
+
+pause=false; let latestYgen=1;
 function ntick() {
-    requestAnimationFrame(ntick);
+  requestAnimationFrame(ntick);
+  if (keys.esc.pressed==false){
+    analyze()
     playerMesh.position.y += timeSpeed;
 
     if(keys.c.pressed){camera.position.y = playerMesh.position.y - 8; camera.rotation.z+=0.01;sLight.position.y = playerMesh.position.y-1.2;}
@@ -151,16 +192,27 @@ function ntick() {
       cubeStorage[ax].update()
     }
     if(tick*timeSpeed%1==0){
-    playerMesh.position.x += movex; playerMesh.position.z += movey; //its z axis for y in this case
-      
+     //its z axis for y in this case
+      playerMesh.position.x += movex; playerMesh.position.z += movey;
       movey = 0;movex=0;
-      sceneGen(playerMesh.position.y+40)
+      if(latestYgen<=playerMesh.position.y+40){sceneGen(playerMesh.position.y+40); latestYgen=Math.round(playerMesh.position.y)+40}
+        
     }
+    if (keys.esc.pressed){pause=true}
     updateScreenInfo();
     //camera.position.x = Math.sin(Math.cos(tick/100))*400*Math.abs(Math.sin(tick/90)+1.2);
     //camera.position.z = Math.sin(Math.sin(tick/100))*400*Math.abs(Math.sin(tick/90)+1.2);
     //camera.position.y = Math.sin(tick/90)*160
     renderer.render(scene, camera);
+
+
+
+
+
+
+  }else{
+  console.log(tick)
+}
 }
 
 function sceneGen(ny){
@@ -172,6 +224,7 @@ for (var t=0;t<5;t++){
   cubeStorage.push(new cubes(Math.random()/2-3 ,ny,t-2,tick/6*Math.PI, 0,900,0.1,0.1,0.1,0xffffff))
   cubeStorage.push(new cubes(Math.random()/2+2.5 ,ny,t-2,tick/6*Math.PI, 0,900,0.1,0.1,0.1,0xffffff))
 }
+
 }
 
 function onStart(){

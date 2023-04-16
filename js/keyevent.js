@@ -1,5 +1,4 @@
 //this is a very standard keyevent file, nothing much really.
-// if you are viewing this code as an outsider, some keys are redundant cause its copied from super circles project i made a while ago, its been like this since.
 
 const keys = {
   a: { pressed: false },
@@ -14,6 +13,7 @@ const keys = {
   aRight: { pressed: false },
   aUp: { pressed: false },
   aDown: { pressed: false },
+  esc: {pressed: false}
 };
 
 document.addEventListener("keydown", ({key}) => {
@@ -57,6 +57,9 @@ document.addEventListener("keydown", ({key}) => {
    case "ArrowRight":
      keys.aRight.pressed = true;
      break;
+    case "Escape":
+      keys.esc.pressed = true;
+      break;
    case "6":
      location.reload();
  }
@@ -103,6 +106,9 @@ document.addEventListener("keyup", ({ key }) => {
     case "ArrowRight":
       keys.aRight.pressed = false;
       break;
+      case "Escape":
+        keys.esc.pressed = false;
+        break;
   }
 });
 
