@@ -10,7 +10,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-var audio = new Audio('/resources/the-noise-expirement (1).mp3'); audio.volume=0.1; audio.currentTime=0;
+var audio = new Audio('/resources/the-noise-expirement (1).mp3'); audio.volume=0.06; audio.currentTime=0;
 
 audio.play();
 // Load the audio file
@@ -24,7 +24,7 @@ analyser.connect(audioCtx.destination);
 analyser.fftSize = 2048;
 var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
-var threshold = 16;
+var threshold = 12;
 // Analyze the audio waveform
 function analyze() {
   analyser.getByteFrequencyData(dataArray);
@@ -37,10 +37,15 @@ function analyze() {
     console.log(78);
     timeBounce(0.5);
   }
+  else if (cubeStorage[1].boxItem.material.opacity= 0.5){
+    for(var ax=0; ax < cubeStorage.length; ax++){
+      cubeStorage[ax].boxItem.material.opacity= 1;
+    }
+  }
 }
 
 // Start analyzing the audio waveform
-analyze();
+
 
 
 const color2 = new THREE.Color( 'skyblue' );
@@ -68,7 +73,10 @@ const cube = new THREE.BoxGeometry(10,10,10);
 
 class cubes{
     constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw){
-      const CubeMat = new THREE.MeshStandardMaterial({ color: cw});
+      const CubeMat = new THREE.MeshPhysicalMaterial({
+        color: cw,
+        transparent: true,
+      });
       this.birthtick = tick;
       this.boxItem = new THREE.Mesh(cube,CubeMat);
         this.velocity={
@@ -102,10 +110,53 @@ class cubes{
         this.boxItem.position.x = this.position.x;
         this.boxItem.position.y = this.position.y;
         this.boxItem.position.z = this.position.z;
-        //this.boxItem.scale.y += 0.01;
+        }}
 
-        //if(this.position.y +6< camera.position.y){scene.remove(this.boxItem); cubeStorage.splice(cubeStorage.indexOf(this),1);this.boxItem.geometry.dispose(); this.boxItem.material.dispose();}
-      }}
+
+
+      class obst{
+        constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw,mm,){
+          const ObsMat = new THREE.MeshPhysicalMaterial({
+            color: cw,
+            opacity: mm,
+            transparent: true,
+          });
+          this.birthtick = tick;
+          this.boxItem = new THREE.Mesh(cube,ObsMat);
+            this.velocity={
+                ang:direction,
+                spd:speed
+            };
+            this.du = duration
+            this.position={
+                x:posx-sx,
+                y:posy-sy,
+                z:posz-sz
+                
+            };
+            this.scale={
+              x:sx,y:sy,z:sz
+            }
+            this.boxItem.scale.set(sx,sy,sz);
+            this.boxItem.position.x = this.position.x;
+            this.boxItem.position.y = this.position.y;
+            this.boxItem.position.z = this.position.z;
+            
+            scene.add(this.boxItem);
+            this.boxItem.receiveShadow = true;
+            this.boxItem.castShadow = true;
+        }
+        update(){
+            if (tick - this.birthtick<=this.du){
+            this.position.x += this.velocity.spd/100 * Math.cos(this.velocity.ang);
+            this.position.y += this.velocity.spd/100 * Math.sin(this.velocity.ang);
+            }
+            this.boxItem.position.x = this.position.x;
+            this.boxItem.position.y = this.position.y;
+            this.boxItem.position.z = this.position.z;
+            //if(this.position.y +24< camera.position.y){scene.remove(this.boxItem); cubeStorage.splice(cubeStorage.indexOf(this),1);this.boxItem.geometry.dispose(); this.boxItem.material.dispose();}
+      
+            }}
 
 const cubeStorage=[];
 
@@ -141,17 +192,23 @@ scene.fog = new THREE.Fog(0x000000, 1, 36);
 
 var movex=0; var movey=0;
 
-//"functions are yellow" - a certain person
-
+//"functions are yellow" - a certain person (below = theme impl)
+function timeSlow(){
+  timeSpeed = timeSpeed*4/5
+}
 function timeBounce(seconds){
   playerMesh.position.y -= seconds;
+  for(var ax=0; ax < cubeStorage.length; ax++){
+    cubeStorage[ax].boxItem.material.opacity= 0.5;
+  }
 }
+
+
 
 pause=false; let latestYgen=1;
 function ntick() {
   requestAnimationFrame(ntick);
   if (keys.esc.pressed==false){
-    analyze()
     playerMesh.position.y += timeSpeed;
 
     if(keys.c.pressed){camera.position.y = playerMesh.position.y - 8; camera.rotation.z+=0.01;sLight.position.y = playerMesh.position.y-1.2;}
@@ -188,6 +245,7 @@ function ntick() {
     
  
     tick++;
+    analyze();
     for(var ax=0; ax < cubeStorage.length; ax++){
       cubeStorage[ax].update()
     }
