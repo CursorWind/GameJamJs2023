@@ -75,6 +75,7 @@ class cubes{
     constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw){
       const CubeMat = new THREE.MeshPhysicalMaterial({
         color: cw,
+        opacity:0.5,
         transparent: true,
       });
       this.birthtick = tick;
@@ -90,9 +91,6 @@ class cubes{
             z:posz-sz
             
         };
-        this.scale={
-          x:sx,y:sy,z:sz
-        }
         this.boxItem.scale.set(sx,sy,sz);
         this.boxItem.position.x = this.position.x;
         this.boxItem.position.y = this.position.y;
@@ -105,7 +103,7 @@ class cubes{
     update(){
         if (tick - this.birthtick<=this.du){
         this.position.x += this.velocity.spd/100 * Math.cos(this.velocity.ang);
-        this.position.y += this.velocity.spd/100 * Math.sin(this.velocity.ang);
+        this.position.z += this.velocity.spd/100 * Math.sin(this.velocity.ang);
         }
         this.boxItem.position.x = this.position.x;
         this.boxItem.position.y = this.position.y;
@@ -115,7 +113,7 @@ class cubes{
 
 
       class obst{
-        constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw,mm,){
+        constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw,mm,hitRad){
           const ObsMat = new THREE.MeshPhysicalMaterial({
             color: cw,
             opacity: mm,
@@ -127,17 +125,14 @@ class cubes{
                 ang:direction,
                 spd:speed
             };
-            this.du = duration
+            this.du = duration;
             this.position={
                 x:posx-sx,
                 y:posy-sy,
                 z:posz-sz
                 
             };
-            this.scale={
-              x:sx,y:sy,z:sz
-            }
-            this.boxItem.scale.set(sx,sy,sz);
+            this.boxItem.scale.set(sx*0.9,sy*0.9,sz*0.9);
             this.boxItem.position.x = this.position.x;
             this.boxItem.position.y = this.position.y;
             this.boxItem.position.z = this.position.z;
@@ -145,20 +140,30 @@ class cubes{
             scene.add(this.boxItem);
             this.boxItem.receiveShadow = true;
             this.boxItem.castShadow = true;
+            this.hitRad = hitRad;
         }
         update(){
             if (tick - this.birthtick<=this.du){
             this.position.x += this.velocity.spd/100 * Math.cos(this.velocity.ang);
-            this.position.y += this.velocity.spd/100 * Math.sin(this.velocity.ang);
+            this.position.z += this.velocity.spd/100 * Math.sin(this.velocity.ang);
             }
             this.boxItem.position.x = this.position.x;
             this.boxItem.position.y = this.position.y;
             this.boxItem.position.z = this.position.z;
             //if(this.position.y +24< camera.position.y){scene.remove(this.boxItem); cubeStorage.splice(cubeStorage.indexOf(this),1);this.boxItem.geometry.dispose(); this.boxItem.material.dispose();}
-      
-            }}
+            this.checks()
+            }
+        checks(){
+          if (this.boxItem.position.distanceTo(playerMesh.position)<this.hitRad){
+            gameEnd();
+          }
+        }
+          }
 
 const cubeStorage=[];
+function gameEnd(){
+  console.log('yo you lost oops') //will finish this within 20th
+}
 
 camera.position.x = 0;
 camera.position.z = 0;
@@ -241,6 +246,8 @@ function ntick() {
       } else movey = 0;
       //playerMesh.position.z = -1.6;
     }
+    cubeStorage.push(new obst(0,playerMesh.position.y+12,0,Math.PI*tick/24,0.2,200,0.01,0.01,0.01,0xff3434, 0.3,0.06))
+    cubeStorage.push(new obst(0,playerMesh.position.y+12,0,Math.PI*tick/24,-0.2,200,0.01,0.01,0.01,0xff3434, 0.8,0.06))
     
     
  
@@ -262,7 +269,6 @@ function ntick() {
     //camera.position.z = Math.sin(Math.sin(tick/100))*400*Math.abs(Math.sin(tick/90)+1.2);
     //camera.position.y = Math.sin(tick/90)*160
     renderer.render(scene, camera);
-
 
 
 
