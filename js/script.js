@@ -1,6 +1,6 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
 //import { OrbitControls } from './OrbitControls.js'; var controls; all orbitcontrol tools are only used for debugging and production, therefore they are intentionally disabled now
-var tick = 0; var timeSpeed; //you can control this
+var tick = 0; var speed; //you can control this
 var SetColor; var pause;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -75,7 +75,7 @@ const cube = new THREE.BoxGeometry(10,10,10);
 
 class cubes{
     constructor(posx,posy,posz,direction,speed,duration,sx,sy,sz,cw){
-      this.bullet=false
+      this.bullet='false'
       const CubeMat = new THREE.MeshPhysicalMaterial({
         color: cw,
         transparent: true,
@@ -122,7 +122,7 @@ class cubes{
             opacity: mm,
             transparent: true,
           });
-          this.bullet = true;
+          this.bullet = 'obst';
           this.birthtick = tick;
           this.boxItem = new THREE.Mesh(cube,ObsMat);
             this.velocity={
@@ -165,13 +165,17 @@ class cubes{
           }
 
           class glassPanes{
-            constructor(posx,posy,posz,left,speed,duration){
+            constructor(posx,posy,posz,left,speed,duration,metal){
               const ObsMat = new THREE.MeshPhysicalMaterial({
-                color: 0x222222,
+                color: 0x222b22,
                 opacity: 0.4,
+                roughness: 0.3,
+                envMapIntensity: 1,
+                refractionRatio: 0.98,
                 transparent: true,
               });
-              this.bullet = true;
+              if (metal){ObsMat.metalness = metal}
+              this.bullet = 'glassPanes';
               this.birthtick = tick;
               this.boxItem = new THREE.Mesh(cube,ObsMat);
                 this.velocity={
@@ -185,7 +189,7 @@ class cubes{
                     z:posz
                     
                 };
-                this.boxItem.scale.set(0.1,0.05,0.9);
+                this.boxItem.scale.set(0.1,0.02,0.9);
                 this.boxItem.position.x = this.position.x;
                 this.boxItem.position.y = this.position.y;
                 this.boxItem.position.z = this.position.z;
@@ -211,13 +215,16 @@ class cubes{
                 this.checks()
                 }
             checks(){
-              
+              if (Math.abs(this.boxItem.position.x-playerMesh.position.x)<0.5 && Math.abs(this.boxItem.position.y - playerMesh.position.y-1)<0.1){
+                gameEnd()
+              }
             }
               }
     
 
 const cubeStorage=[];
 function gameEnd(){
+  audio.pause();
   console.log('yo you lost oops') //will finish this within 20th
 }
 
@@ -228,7 +235,7 @@ camera.lookAt(0,0,0)
 stage.position.y = camera.position.y - 8
 //controls = new OrbitControls(camera, renderer.domElement)
 
-timeSpeed = 0.05;
+speed = 0.05;
 
 function updateScreenInfo(){
   document.getElementById('screensinformation').style.display = 'block';
@@ -255,13 +262,12 @@ var movex=0; var movey=0;
 
 //"functions are yellow" - a certain person (below = theme impl)
 function timeSlow(){
-  timeSpeed = timeSpeed*4/5
 }
 
 function timeBounce(seconds){
   playerMesh.position.y -= seconds;
   for(var ax=0; ax < cubeStorage.length; ax++){
-    if (cubeStorage[ax].bullet==false) {cubeStorage[ax].boxItem.material.opacity= 0.5;}
+    if (cubeStorage[ax].bullet=='false') {cubeStorage[ax].boxItem.material.opacity= 0.5;}
   }
 }
 
@@ -271,14 +277,14 @@ pause=false; let latestYgen=1;
 function ntick() {
   requestAnimationFrame(ntick);
   if (keys.esc.pressed==false){
-    playerMesh.position.y += timeSpeed;
+    playerMesh.position.y += speed;
 
-    if(keys.c.pressed){camera.position.y = playerMesh.position.y - 8; sLight.position.y = playerMesh.position.y-1.2;}
+    if(keys.c.pressed){camera.position.y = playerMesh.position.y - 8; sLight.position.y = playerMesh.position.y-1.2; camera.position.x = 0, camera.position.z = 0}
     else{camera.position.y = playerMesh.position.y+1; sLight.position.y = playerMesh.position.y+1;
     camera.position.x = playerMesh.position.x, camera.position.z = playerMesh.position.z}
     //camera.rotation.z += 0.001;
     
-    playerMesh.rotation.x = timeSpeed*Math.sin(tick/20)*6;
+    playerMesh.rotation.x = speed*Math.sin(tick/20)*6;
 
     //moving the player (the ones marked as comment will be tested soon o/)
     if (keys.a.pressed){
@@ -312,7 +318,7 @@ function ntick() {
     for(var ax=0; ax < cubeStorage.length; ax++){
       cubeStorage[ax].update()
     }
-    if(tick*timeSpeed%1==0){
+    if(tick*speed%1==0){
      //its z axis for y in this case
       playerMesh.position.x += movex; playerMesh.position.z += movey;
       movey = 0;movex=0;
@@ -363,4 +369,4 @@ scene.add(sLight);
   ntick();
 
 
-  cubeStorage.push(new glassPanes(0,playerMesh.position.y+16,0,true,0.01,13000))
+  cubeStorage.push(new glassPanes(-3,playerMesh.position.y+16,0,true,1,13000))
