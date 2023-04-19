@@ -1,0 +1,10 @@
+{
+    "stageData":{
+        "firstLevel":{
+            "cTone": "0xffffff",
+            "cFog": "0x000000",
+            "distFog": 1,
+            "distFogEnd": 36
+        }
+    }
+}

@@ -1,3 +1,5 @@
+//official threejs file. not part of the code submission.
+
 import {
 	EventDispatcher,
 	MOUSE,
