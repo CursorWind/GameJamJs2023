@@ -1,10 +1,18 @@
 {
     "stageData":{
-        "firstLevel":{
+        "1":{
             "cTone": "0xffffff",
             "cFog": "0x000000",
             "distFog": 1,
-            "distFogEnd": 36
+            "distFogEnd": 36,
+            "displayName": ""
+        },
+        "2":{
+            "cTone": "0xffffff",
+            "cFog": "0x000000",
+            "distFog": 1,
+            "distFogEnd": 36,
+            "displayName": ""
         }
     }
 }

@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Calligraffitti&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap');
 
 body {
   font-family: "Fira Code", monospace;
@@ -33,3 +35,22 @@ p {
   display: inline;
 }
 
+.fade {
+  opacity: 0;
+  animation: fadeInOut 4s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

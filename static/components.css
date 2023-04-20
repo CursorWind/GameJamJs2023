@@ -1,0 +1,35 @@
+#notif{
+    font-family: 'Calligraffitti', cursive;
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+    position: fixed;
+    z-index: 999;
+    width: auto; height: auto;
+}
+
+#notif #one{
+    
+    position: relative;
+    text-align: left;
+    align-items: center;
+    vertical-align: middle;
+    color: whitesmoke;
+    font-size: 96px;
+    text-shadow: 2px 2px 12px #1b529e;
+    z-index: 1001;
+}
+
+#notif #lvl{
+    font-family: 'Sedgwick Ave', cursive;
+    position: relative;
+    text-align: left;
+    align-items: center;
+    vertical-align: top;
+    top: -40px;
+    left: 80px;
+    color: whitesmoke;
+    font-size: 36px;
+    text-shadow: 2px 2px 12px #3162a8;
+    z-index: 1001;
+}
