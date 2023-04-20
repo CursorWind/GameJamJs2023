@@ -1,7 +1,7 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
 //import { OrbitControls } from './OrbitControls.js'; var controls; all orbitcontrol tools are only used for debugging and production, therefore they are intentionally disabled now
 var tick = 0; var speed; //you can control this
-var SetColor; var pause;
+var SetColor; var pause; var timeTickSpeed;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   42,
@@ -165,13 +165,12 @@ class cubes{
           }
 
           class glassPanes{
-            constructor(posx,posy,posz,left,speed,duration,metal){
+            constructor(posx,posy,posz,left,speed,duration,metal,w){
               const ObsMat = new THREE.MeshPhysicalMaterial({
                 color: 0x222b22,
                 opacity: 0.4,
                 roughness: 0.3,
                 envMapIntensity: 1,
-                refractionRatio: 0.98,
                 transparent: true,
               });
               if (metal){ObsMat.metalness = metal}
@@ -189,7 +188,8 @@ class cubes{
                     z:posz
                     
                 };
-                this.boxItem.scale.set(0.1,0.02,0.9);
+                this.w=w
+                this.boxItem.scale.set(this.w/10,0.02,0.9);
                 this.boxItem.position.x = this.position.x;
                 this.boxItem.position.y = this.position.y;
                 this.boxItem.position.z = this.position.z;
@@ -201,10 +201,10 @@ class cubes{
             update(){
                 if (tick - this.birthtick<=this.du){
                   if (this.velocity.left==true){
-                    this.position.x += this.velocity.spd/100;
+                    this.position.x += this.velocity.spd/100 * timeTickSpeed;
                   }
                   else {
-                    this.position.x -= this.velocity.spd/100;
+                    this.position.x -= this.velocity.spd/100 * timeTickSpeed;
                   }
                 
                 }
@@ -215,7 +215,7 @@ class cubes{
                 this.checks()
                 }
             checks(){
-              if (Math.abs(this.boxItem.position.x-playerMesh.position.x)<0.5 && Math.abs(this.boxItem.position.y - playerMesh.position.y-1)<0.1){
+              if (Math.abs(this.boxItem.position.x-playerMesh.position.x)<0.5 && Math.abs(this.boxItem.position.y - playerMesh.position.y-1)<this.w/20){
                 gameEnd()
               }
             }
@@ -273,7 +273,7 @@ function timeBounce(seconds){
 
 
 
-pause=false; let latestYgen=1;
+pause=false; let latestYgen=1; timeTickSpeed=1;
 function ntick() {
   requestAnimationFrame(ntick);
   if (keys.esc.pressed==false){
@@ -288,27 +288,17 @@ function ntick() {
 
     //moving the player (the ones marked as comment will be tested soon o/)
     if (keys.a.pressed){
-      if(playerMesh.position.x-0.4 >-2){
-        movex = -0.4;
-      }else movex = 0; //playerMesh.position.x=-1.6;
+        timeTickSpeed=0.5;//slow time
     }
     else if (keys.d.pressed){
-      if(playerMesh.position.x+0.4 < 2){
-        movex = 0.4;
-      }    else movex = 0; //playerMesh.position.x=1.6;
+        timeTickSpeed=1.5;//fast time
     }
     
     if (keys.w.pressed) {
-      if (playerMesh.position.z + 0.4 < 2) {
-        movey = 0.4;
-      } else movey = 0; 
-      //playerMesh.position.z = 1.6;
+              speed = speed/2+0.075/2; //speedup
     } else if (keys.s.pressed) {
-      if (playerMesh.position.z - 0.4 > -2) {
-        movey = -0.4;
-      } else movey = 0;
-      //playerMesh.position.z = -1.6;
-    }
+      speed = speed/2+0.0125; //slowdown
+    } else {speed=0.05}
     //example function - cubeStorage.push(new obst(0,playerMesh.position.y+12*Math.sin(tick/24)+16,0,Math.PI*tick/12+Math.PI*Math.sin(tick/24),1.2,2000,0.01,0.01,0.01,0x334343, 1,0.06))
     
     
@@ -369,4 +359,21 @@ scene.add(sLight);
   ntick();
 
 
-  cubeStorage.push(new glassPanes(-3,playerMesh.position.y+16,0,true,1,13000))
+
+  function gameStart(){
+const notif = document.getElementById("notif");
+const lvlEl = document.createElement("p");
+const oneEl = document.createElement("p");
+lvlEl.setAttribute("id", "lvl");
+lvlEl.textContent = "Stage 1";
+oneEl.setAttribute("id", "one");
+oneEl.textContent = "Sine Wave";
+notif.appendChild(lvlEl);
+notif.appendChild(oneEl);
+
+
+    cubeStorage.push(new glassPanes(-3,playerMesh.position.y+16,0,true,1,13000,0.2,2))
+  };
+  
+
+  //gameStart()
