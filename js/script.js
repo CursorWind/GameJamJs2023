@@ -562,8 +562,7 @@ if(difficulty==4){audio = new Audio('./resources/Xtrullor-Tria.mp3'); audio.volu
 
 audio.play();
 audio.addEventListener('ended', () => {
-  showEndingScreen();
-  console.log('GG, Thanks for playing!');
+  if(start){showEndingScreen();console.log('GG, Thanks for playing!');}  
 });
 onStart();
 start=true
