@@ -542,7 +542,7 @@ setTimeout(function() {
   
 
 audio = new Audio('/resources/tnex.mp3'); audio.volume=0.06; audio.currentTime=0;
-if(difficulty==4){audio = new Audio('/resources/Xtrullor-Tria.mp3'); audio.volume=0.01; audio.currentTime=230;}
+if(difficulty==4){audio = new Audio('/resources/Xtrullor-Tria.mp3'); audio.volume=0.01; audio.currentTime=0;}
 
 
   // Load the audio file
