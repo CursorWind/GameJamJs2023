@@ -6,6 +6,7 @@
     <head>
         <title> Time ;-;</title>
         <link href = 'style.css' rel = 'stylesheet' type = 'text/css'>
+        <link href = 'static/pausemenu.css' rel = 'stylesheet' type = 'text/css'>
         <link href = 'static/components.css' rel = 'stylesheet' type = 'text/css'>
 
     </head>
@@ -35,7 +36,36 @@
             
         </span>
         <div id="homeScreenCom">
-            <p id="startButton"> Game Start </p> <p id="extraStageStart"> Extra Start </p><p id="practiceStart"> Practice Start</p> <p id="setting"> Settings </p> <p id='escape'onClick="javascript:window.close('','_parent','');"> Exit </p>
+            <p id="startButton" onclick="startDisplay()"> Game Start 
+                <p id='start1' class="tst"> Easy </p> 
+                <p id='start2' class="tst"> Normal </p> 
+                <p id='start3' class="tst"> Hard </p> 
+                <p id='start4' class="tst"> Lunatic </p> 
+            <p>
+                
+             <p id="extraStageStart"> Extra Start </p><p id="practiceStart"> Practice Start</p> <p id="setting"> Settings </p> <p id='escape'onClick="exitButton()"> Exit </p>
         </div>
+            <!--exit button is for those like me who play full screen-->
+            <div id="pause-overlay">
+            <div class="pause-menu">
+                <h2>Game Paused</h2>
+                <ul>
+                  <li><a id="resume">Resume</a></li>
+                  <li><a id="restart">Restart</a></li>
+                  <li><a id="reloadPage">Reload page</a></li>
+                  <li><a href="#">Settings</a></li>
+                </ul>
+              </div>
+            </div>
+            <p id="notification">  </p>
+
+            <div class="ending-screen">
+                <div class="gg-text">
+                  <h1>GG</h1>
+                  <p>Thanks for playing!</p>
+                </div>
+              </div>
+              
+        <span id="ambience"></span>
     </body>
 </html>

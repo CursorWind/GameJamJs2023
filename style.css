@@ -35,24 +35,15 @@ p {
   display: inline;
 }
 
-.fade {
-  opacity: 0;
-  animation: fadeInOut 4s ease-in-out forwards;
+
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.fade-in-out {
+  animation: fade-in-out 3s;
 }
 
 #homeScreenCom p{
@@ -68,8 +59,14 @@ p {
     font-size: 36px;
 }
 
+#homeScreenCom p:hover{
+  text-shadow: 2px 2px 12px #2c84ff;
+}
+
+
 #startButton{
   z-index: 9999;
+  
   top: 300px;
   left:80px;
   position: absolute;
@@ -101,4 +98,44 @@ p {
   top: 540px;
   position: absolute;
   left: 80px;
+}
+
+#start1{
+  position: relative;
+  z-index: 998;
+  top: 300px;
+  left: 360px;
+  transition-duration: 2s;
+  opacity: 1;
+}
+
+#start2{
+  position: relative;
+  z-index: 998;
+  top: 300px;
+  left: 480px;
+  transition-duration: 2s;
+  opacity: 1.0;
+}
+
+#start3{
+  position: relative;
+  z-index: 998;
+  top: 300px;
+  left: 600px;
+  transition-duration: 2s;
+  opacity: 1.0;
+}
+
+#start4{
+  position: relative;
+  z-index: 998;
+  top: 300px;
+  left: 720px;
+  transition-duration: 2s;
+  opacity: 1.0;
+}
+
+.tst{
+  display: none;
 }

@@ -1,0 +1,12 @@
+{
+    "description":{
+        "smoothFix":"May cause lag, fixes stage generation sometimes",
+        "LowDetailmode":"A mode optimized for low end devices",
+        "ForceSmoothFix": "Generally forces all terrain generation (not recommended)",
+        "AutoNextAttempt": "Automatically starts next attempt. why not?",
+        "DisableShakeEffects": "Disables... shake effects... Yeah.",
+        "CharachterSettings": "not coming soon"
+        
+    }
+    
+}
