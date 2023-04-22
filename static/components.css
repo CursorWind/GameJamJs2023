@@ -4,7 +4,7 @@
     align-items: center;
     vertical-align: middle;
     position: fixed;
-    z-index: 999;
+    z-index: 99;
     width: auto; height: auto;
 }
 
@@ -17,7 +17,7 @@
     color: whitesmoke;
     font-size: 96px;
     text-shadow: 2px 2px 12px #1b529e;
-    z-index: 1001;
+    z-index: 101;
 }
 
 #notif #lvl{
@@ -31,5 +31,5 @@
     color: whitesmoke;
     font-size: 36px;
     text-shadow: 2px 2px 12px #3162a8;
-    z-index: 1001;
+    z-index: 101;
 }

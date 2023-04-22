@@ -5,7 +5,9 @@
             "cFog": "0x000000",
             "distFog": 1,
             "distFogEnd": 36,
-            "displayName": ""
+            "displayName": "",
+            "stageObjectSpawnTimeLeft": [14,71,92,19],
+            "stageObjectSpawnTimeRight": [25,122]
         },
         "2":{
             "cTone": "0xffffff",

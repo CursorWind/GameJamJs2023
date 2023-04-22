@@ -9,44 +9,9 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+import stageData from './json/gameStageSetups.json' assert { type: 'json' };
+console.log(stageData);
 
-var audio = new Audio('/resources/the-noise-expirement (1).mp3'); audio.volume=0.06; audio.currentTime=0;
-
-audio.play();
-// Load the audio file
-var audioCtx = new AudioContext();
-var audioSrc = audioCtx.createMediaElementSource(audio);
-var analyser = audioCtx.createAnalyser();
-audioSrc.connect(analyser);
-analyser.connect(audioCtx.destination);
-
-// Set the FFT size
-analyser.fftSize = 2048;
-var bufferLength = analyser.frequencyBinCount;
-var dataArray = new Uint8Array(bufferLength);
-var threshold = 12;
-// Analyze the audio waveform
-function analyze() {
-  analyser.getByteFrequencyData(dataArray);
-  var sum = 0;
-  for (var i = 0; i < bufferLength; i++) {
-    sum += dataArray[i];
-  }
-  var average = sum / bufferLength;
-  if (average > threshold) {
-    console.log(78);
-    timeBounce(0.5);
-  }
-  else if (cubeStorage[1].boxItem.material.opacity= 0.5){
-    for(var ax=0; ax < cubeStorage.length; ax++){
-      if (cubeStorage[ax].bullet==false) {      
-      cubeStorage[ax].boxItem.material.opacity= 1;
-    }
-    }
-  }
-}
-
-// Start analyzing the audio waveform
 
 
 
@@ -163,7 +128,57 @@ class cubes{
           }
         }
           }
+          const turretBodyGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+    const turretBodyMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    const noseGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 32);
+    const noseMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+    
+class Turret {
+  constructor(x, y, z, direction, speed) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.direction = direction;
+    this.speed = speed;
+    
+    const turretBody = new THREE.Mesh(turretBodyGeometry, turretBodyMaterial);
+    scene.add(turretBody)
+    const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+    scene.add(nose);
+  }
 
+  shoot() {
+    // Create a new bullet instance and add it to the scene
+    const bullet = new Bullet(this.x, this.y, this.z, this.direction, this.speed);
+    scene.add(bullet.mesh);
+  }
+}
+
+class Bullet {
+  constructor(x, y, z, direction, speed) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.direction = direction;
+    this.speed = speed;
+
+    // Create the bullet mesh
+    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.position.set(this.x, this.y, this.z);
+  }
+
+  update() {
+    // Update the bullet position based on its direction and speed
+    this.x += Math.cos(this.direction) * this.speed;
+    this.z += Math.sin(this.direction) * this.speed;
+    this.mesh.position.set(this.x, this.y, this.z);
+  }
+}
+
+const bulletStorage = [];
+const turretStorage = [];
           class glassPanes{
             constructor(posx,posy,posz,left,speed,duration,metal,w){
               const ObsMat = new THREE.MeshPhysicalMaterial({
@@ -256,7 +271,7 @@ playerMesh.position.set(0,0,0);
 playerMesh.castShadow = true;
 playerMesh.receiveShadow = true;
 
-scene.fog = new THREE.Fog(0x000000, 1, 36);
+const fog = new THREE.Fog(0x000000, 1, 36); scene.fog = fog
 
 var movex=0; var movey=0;
 
@@ -269,11 +284,14 @@ function timeBounce(seconds){
   for(var ax=0; ax < cubeStorage.length; ax++){
     if (cubeStorage[ax].bullet=='false') {cubeStorage[ax].boxItem.material.opacity= 0.5;}
   }
+  for(var ax=0; ax < bulletStorage.length; ax++){
+    bulletStorage[i].update()
+  }
 }
 
+const slowTfog=new THREE.Color(0x005066); const fastTfog = new THREE.Color(0x665000)
 
-
-pause=false; let latestYgen=1; timeTickSpeed=1;
+pause=false; let latestYgen=1; timeTickSpeed=1; let start = false
 function ntick() {
   requestAnimationFrame(ntick);
   if (keys.esc.pressed==false){
@@ -289,22 +307,19 @@ function ntick() {
     //moving the player (the ones marked as comment will be tested soon o/)
     if (keys.a.pressed){
         timeTickSpeed=0.5;//slow time
+
     }
     else if (keys.d.pressed){
         timeTickSpeed=1.5;//fast time
+
     }
     
-    if (keys.w.pressed) {
-              speed = speed/2+0.075/2; //speedup
-    } else if (keys.s.pressed) {
-      speed = speed/2+0.0125; //slowdown
-    } else {speed=0.05}
     //example function - cubeStorage.push(new obst(0,playerMesh.position.y+12*Math.sin(tick/24)+16,0,Math.PI*tick/12+Math.PI*Math.sin(tick/24),1.2,2000,0.01,0.01,0.01,0x334343, 1,0.06))
     
     
  
-    tick++;
-    analyze();
+   tick++;
+    if(start == true){ analyze();}
     for(var ax=0; ax < cubeStorage.length; ax++){
       cubeStorage[ax].update()
     }
@@ -358,22 +373,88 @@ scene.add(sLight);
 
   ntick();
 
-
-
+  
+  function analyze() {
+    analyser.getByteFrequencyData(dataArray);
+    var sum = 0;
+    for (var i = 0; i < bufferLength; i++) {
+      sum += dataArray[i];
+    }
+    var average = sum / bufferLength;
+    if (average > threshold) {
+      timeBounce(0.5);
+    }
+    else if (cubeStorage[1].boxItem.material.opacity= 0.5){
+      for(var ax=0; ax < cubeStorage.length; ax++){
+        if (cubeStorage[ax].bullet=='false') {
+        cubeStorage[ax].boxItem.material.opacity= 1;
+        
+      }
+      }
+    }
+  }
+  
+  var audio
+var audioCtx; var audioSrc; var analyser; var bufferLength; var dataArray; var threshold;
   function gameStart(){
+    const rv = document.getElementById('homeScreenCom');
+    console.log(rv)
+    rv.style.display='none'
+    start=true
 const notif = document.getElementById("notif");
 const lvlEl = document.createElement("p");
 const oneEl = document.createElement("p");
 lvlEl.setAttribute("id", "lvl");
-lvlEl.textContent = "Stage 1";
+lvlEl.textContent = 'stage 1';
+lvlEl.className='fade';
 oneEl.setAttribute("id", "one");
-oneEl.textContent = "Sine Wave";
+oneEl.textContent = stageData.stageData["1"].displayName;
+oneEl.className='fade'
 notif.appendChild(lvlEl);
 notif.appendChild(oneEl);
 
+turretStorage.push(new Turret(-2,playerMesh.position.y+24,0))
 
-    cubeStorage.push(new glassPanes(-3,playerMesh.position.y+16,0,true,1,13000,0.2,2))
+for(var t=0; t<stageData.stageData[1].stageObjectSpawnTimeLeft.length; t++){
+  cubeStorage.push(new glassPanes(-3,playerMesh.position.y+stageData.stageData[1].stageObjectSpawnTimeLeft[t],0,true,1,13000,0.2,1.2))
+}
+for(var t=0; t<stageData.stageData[1].stageObjectSpawnTimeLeft.length; t++){
+  cubeStorage.push(new glassPanes(-3,playerMesh.position.y+stageData.stageData[1].stageObjectSpawnTimeLeft[t],0,false,1,13000,0.2,1.2))
+}
+
+audio = new Audio('/resources/tnex.mp3'); audio.volume=0.06; audio.currentTime=0;
+
+  // Load the audio file
+  audioCtx = new AudioContext();
+  audioSrc = audioCtx.createMediaElementSource(audio);
+  analyser = audioCtx.createAnalyser();
+  audioSrc.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  
+  // Set the FFT size
+  analyser.fftSize = 2048;
+  bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+  threshold = 12;
+  // Analyze the audio waveform
+
+audio.play();
+
   };
   
 
-  //gameStart()
+
+
+
+
+  
+const button = document.querySelector('#startButton');
+button.addEventListener('click', gameStart);
+
+document.addEventListener("fullscreenchange", function () {
+  if (document.fullscreenElement) {
+    location.reload();
+  } else {
+    location.reload();
+  }
+});
